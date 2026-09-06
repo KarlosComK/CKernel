@@ -59,9 +59,6 @@ jobs:
       - name: Add missing SUSFS no_su stubs
         run: |
           cat >> fs/susfs.c << 'EOF'
-      - name: Add missing SUSFS no_su stubs
-        run: |
-          cat >> fs/susfs.c << 'EOF'
           /* Stub implementations - this kernel's SUSFS core doesn't implement
           these newer no_su spoofing helpers that ReSukiSU's driver expects. */
           bool susfs_is_current_proc_no_su(void) { return false; }
