@@ -1,0 +1,160 @@
+name: Build CKernel with KernelSU-Next
+
+on:
+  push:
+    branches:
+      - KSU-Next(V3/V2)
+  workflow_dispatch:
+
+env:
+  KERNEL_DEFCONFIG: "blossom_defconfig"
+  KERNEL_ARCH: "arm64"
+  KBUILD_BUILD_USER: "github-actions"
+  KBUILD_BUILD_HOST: "ci-server"
+
+jobs:
+  build_and_package:
+    name: Build Kernel & Package AnyKernel3
+    runs-on: ubuntu-22.04
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          export DEBIAN_FRONTEND=noninteractive
+          sudo apt-get update
+          sudo apt-get install -y bc bison flex build-essential libssl-dev libelf-dev cpio kmod git zip curl ca-certificates jq \
+            wget libffi-dev zlib1g-dev libreadline-dev libsqlite3-dev libbz2-dev libncurses5-dev libgdbm-dev liblzma-dev tk-dev
+
+      - name: Configure git
+        run: |
+          git config --global http.sslVerify false
+          git config --global url."https://".insteadOf git://
+
+      - name: Clone crdroid Clang
+        run: |
+          echo "Cloning crdroid Clang..."
+          git clone --depth=1 https://gitlab.com/crdroidandroid/android_prebuilts_clang_host_linux-x86_clang-r428724.git /tmp/clang
+
+      - name: Clone LineageOS GCC toolchains
+        run: |
+          echo "Cloning GCC ARM64..."
+          git clone --depth=1 https://github.com/LineageOS/android_prebuilts_gcc_linux-x86_aarch64_aarch64-linux-android-4.9.git /tmp/gcc-aarch64
+
+          echo "Cloning GCC ARM32..."
+          git clone --depth=1 https://github.com/LineageOS/android_prebuilts_gcc_linux-x86_arm_arm-linux-androideabi-4.9.git /tmp/gcc-arm
+
+      - name: Verify toolchains
+        run: |
+          /tmp/clang/bin/clang --version
+          /tmp/gcc-aarch64/bin/aarch64-linux-android-gcc --version
+          /tmp/gcc-arm/bin/arm-linux-androideabi-gcc --version
+
+      - name: Integrate KernelSU-Next
+        run: |
+          curl -LSs "https://raw.githubusercontent.com/ReSukiSU/ReSukiSU/main/kernel/setup.sh" | bash -s susfs-2.2.0
+          
+      - name: Add missing SUSFS no_su stubs
+        run: |
+          cat >> fs/susfs.c << 'EOF'
+      - name: Add missing SUSFS no_su stubs
+        run: |
+          cat >> fs/susfs.c << 'EOF'
+          /* Stub implementations - this kernel's SUSFS core doesn't implement
+          these newer no_su spoofing helpers that ReSukiSU's driver expects. */
+          bool susfs_is_current_proc_no_su(void) { return false; }
+          void susfs_set_current_proc_no_su(void) { }
+          void susfs_clear_current_proc_no_su(void) { }
+          void susfs_set_current_proc_umounted_for_zygote_next(void) { }
+          EOF
+
+      - name: Build kernel
+        run: |
+          export PATH="/tmp/clang/bin:/tmp/gcc-aarch64/bin:/tmp/gcc-arm/bin:${PATH}"
+
+          export ARCH=${KERNEL_ARCH}
+          export CROSS_COMPILE="aarch64-linux-android-"
+          export CROSS_COMPILE_ARM32="arm-linux-androideabi-"
+          export CC="clang"
+          export CLANG_TRIPLE="aarch64-linux-gnu-"
+
+          make O=out ARCH=${ARCH} ${KERNEL_DEFCONFIG}
+
+          echo "Building CKernel with KernelSU-Next..."
+          make -j$(nproc) \
+            O=out \
+            ARCH=${ARCH} \
+            CC=clang \
+            CLANG_TRIPLE=${CLANG_TRIPLE} \
+            CROSS_COMPILE=${CROSS_COMPILE} \
+            CROSS_COMPILE_ARM32=${CROSS_COMPILE_ARM32} \
+            2>&1 | tee build.log
+
+      - name: Package AnyKernel3
+        run: |
+          git clone --depth=1 https://github.com/Iam-nishan/anykernel.git anykernel
+          cd anykernel
+          rm -f zImage *.dtb
+
+          if [ -f "../out/arch/${KERNEL_ARCH}/boot/Image.gz-dtb" ]; then
+            cp ../out/arch/${KERNEL_ARCH}/boot/Image.gz-dtb Image.gz-dtb
+            echo "✓ Copied Image.gz-dtb"
+          elif [ -f "../out/arch/${KERNEL_ARCH}/boot/Image.gz" ]; then
+            cp ../out/arch/${KERNEL_ARCH}/boot/Image.gz Image.gz
+            echo "✓ Copied Image.gz"
+          elif [ -f "../out/arch/${KERNEL_ARCH}/boot/Image" ]; then
+            cp ../out/arch/${KERNEL_ARCH}/boot/Image Image
+            echo "✓ Copied Image"
+          else
+            echo "✗ No kernel image found!"
+            ls -lah ../out/arch/${KERNEL_ARCH}/boot/
+            exit 1
+          fi
+
+          cp ../out/arch/${KERNEL_ARCH}/boot/dtb*.img . 2>/dev/null || echo "No DTB files"
+
+          cat > anykernel.sh << 'EOF'
+          properties() { '
+          kernel.string=CKernel for blossom by CarlosComC on XDA (and kurama-tails for kernel source!) 
+          do.devicecheck=1
+          device.name1=blossom
+          device.name2=dandelion
+          device.name3=angelica
+          device.name4=angelican
+          device.name5=cattail
+          device.name6=angelicain
+          do.modules=0
+          do.systemless=1
+          do.cleanup=1
+          do.cleanuponabort=0
+          '; }
+
+          block=/dev/block/by-name/boot;
+          is_slot_device=0;
+          ramdisk_compression=auto;
+
+          . tools/ak3-core.sh;
+          dump_boot;
+          write_boot;
+          EOF
+
+          zip -r9 ../CKernel-${{ github.sha }}.zip * -x .git README.md *placeholder
+
+      - name: Upload AnyKernel package
+        uses: actions/upload-artifact@v7
+        with:
+          name: CKernel-KSU
+          path: CKernel-${{ github.sha }}.zip
+          archive: false
+          retention-days: 30
+          compression-level: 0
+
+      - name: Upload build log
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: build-log-${{ github.sha }}
+          path: build.log
+          retention-days: 7
