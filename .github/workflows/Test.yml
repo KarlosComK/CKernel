@@ -72,7 +72,6 @@ jobs:
           chmod +x setup.sh
           ./setup.sh
 
-
       - name: Build kernel
         run: |
           export PATH="/tmp/clang/bin:/tmp/gcc-aarch64/bin:/tmp/gcc-arm/bin:${PATH}"
