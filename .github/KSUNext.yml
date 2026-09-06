@@ -145,7 +145,7 @@ EOF
       - name: Upload AnyKernel package
         uses: actions/upload-artifact@v7
         with:
-          name: Jujutsu-Kernel-KSU
+          name: CKernel-KSU
           path: CKernel-${{ github.sha }}.zip
           archive: false
           retention-days: 30
