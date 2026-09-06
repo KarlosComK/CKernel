@@ -3,7 +3,7 @@ name: Build CKernel with KernelSU-Next
 on:
   push:
     branches:
-      - GpuOCTest
+      - KSU-Next(V3/V2)
   workflow_dispatch:
 
 env:
@@ -54,7 +54,7 @@ jobs:
 
       - name: Integrate KernelSU-Next
         run: |
-          curl -LSs "https://raw.githubusercontent.com/ReSukiSU/ReSukiSU/main/kernel/setup.sh" | bash
+          curl -LSs "https://raw.githubusercontent.com/ReSukiSU/ReSukiSU/main/kernel/setup.sh" | bash -s susfs-2.2.0
           
       - name: Build kernel
         run: |
