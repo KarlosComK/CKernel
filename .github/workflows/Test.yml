@@ -67,6 +67,12 @@ jobs:
           void susfs_set_current_proc_umounted_for_zygote_next(void) { }
           EOF
 
+      - name: Run Setup Script (KernelSU-Next + SUSFS)
+        run: |
+          chmod +x setup.sh
+          ./setup.sh
+
+
       - name: Build kernel
         run: |
           export PATH="/tmp/clang/bin:/tmp/gcc-aarch64/bin:/tmp/gcc-arm/bin:${PATH}"
