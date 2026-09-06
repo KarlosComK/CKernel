@@ -69,6 +69,7 @@ jobs:
 
       - name: Run Setup Script (KernelSU-Next + SUSFS)
         run: |
+          mkdir -p drivers/kernelsu
           chmod +x setup.sh
           ./setup.sh
 
