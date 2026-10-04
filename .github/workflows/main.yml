@@ -54,7 +54,7 @@ jobs:
 
       - name: Integrate KernelSU-Next
         run: |
-           curl -LSs "https://raw.githubusercontent.com/tiann/KernelSU/main/kernel/setup.sh" | bash -s v0.9.5
+          curl -LSs "https://raw.githubusercontent.com/ReSukiSU/ReSukiSU/main/kernel/setup.sh" | bash
            
       - name: Build kernel 
         run: |
