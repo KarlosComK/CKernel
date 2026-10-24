@@ -1895,7 +1895,7 @@ out_files:
 out_ret:
 
 #ifdef CONFIG_KSU_MANUAL_HOOK
-	ksu_handle_post_execveat(&fd, &filename, &argv, &envp, &flags, &retval)
+	ksu_handle_post_execveat(&fd, &filename, &argv, &envp, &flags, &retval);
 #endif
 		
 	if (filename)
