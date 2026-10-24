@@ -1,4 +1,4 @@
-name: Build CKernel with KernelSU-Next
+name: Build CKernel with BakaSU
 
 on:
   push:
@@ -52,7 +52,7 @@ jobs:
           /tmp/gcc-aarch64/bin/aarch64-linux-android-gcc --version
           /tmp/gcc-arm/bin/arm-linux-androideabi-gcc --version
 
-      - name: Integrate KernelSU-Next
+      - name: Integrate BakaSU
         run: |
           curl -LSs "https://raw.githubusercontent.com/Baka-SU/BakaSU/main/kernel/setup.sh" | bash
           
