@@ -1719,6 +1719,15 @@ static int exec_binprm(struct linux_binprm *bprm)
 	return ret;
 }
 
+#ifdef CONFIG_KSU_MANUAL_HOOK
+__attribute__((hot))
+extern int ksu_handle_execveat(int *fd, struct filename **filename_ptr,
+				void *argv, void *envp, int *flags);
+__attribute__((hot))
+extern int ksu_handle_post_execveat(int *fd, struct filename **filename_ptr,
+				void *argv, void *envp, int *flags, int *retval);
+#endif
+
 /*
  * sys_execve() executes a new program.
  */
@@ -1884,6 +1893,11 @@ out_files:
 	if (displaced)
 		reset_files_struct(displaced);
 out_ret:
+
+#ifdef CONFIG_KSU_MANUAL_HOOK
+	ksu_handle_post_execveat(&fd, &filename, &argv, &envp, &flags, &retval)
+#endif
+		
 	if (filename)
 		putname(filename);
 	return retval;
@@ -1894,7 +1908,22 @@ static int do_execveat_common(int fd, struct filename *filename,
 			      struct user_arg_ptr envp,
 			      int flags)
 {
-	return __do_execve_file(fd, filename, argv, envp, flags, NULL);
+	int retval;
+
+#ifdef CONFIG_KSU_MANUAL_HOOK
+	ksu_handle_execveat(&fd, &filename, &argv, &envp, &flags);
+#endif
+
+	if (IS_ERR(filename))
+		return PTR_ERR(filename);
+	
+    retval = __do_execve_file(fd, filename, argv, envp, flags, NULL);
+
+#ifdef CONFIG_KSU_MANUAL_HOOK
+	ksu_handle_post_execveat(&fd, &filename, &argv, &envp, &flags, &retval);
+#endif
+	
+	return retval;
 }
 
 int do_execve_file(struct file *file, void *__argv, void *__envp)
