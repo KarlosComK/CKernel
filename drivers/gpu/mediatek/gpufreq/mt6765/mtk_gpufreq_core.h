@@ -19,31 +19,31 @@
  * MT6762 segment_2 : GPU DVFS OPP table Setting
  **************************************************/
 #define SEG2_GPU_DVFS_FREQ0			(700000)	/* KHz */
-#define SEG2_GPU_DVFS_FREQ1			(520000)	/* KHz */
-#define SEG2_GPU_DVFS_FREQ2			(416000)	/* KHz */
+#define SEG2_GPU_DVFS_FREQ1			(500000)	/* KHz */
+#define SEG2_GPU_DVFS_FREQ2			(400000)	/* KHz */
 
-#define SEG2_GPU_DVFS_VOLT0			(102000)		/* mV x 100 */
-#define SEG2_GPU_DVFS_VOLT1			(85000)		/* mV x 100 */
-#define SEG2_GPU_DVFS_VOLT2			(75000)		/* mV x 100 */
+#define SEG2_GPU_DVFS_VOLT0			(102000)	/* mV x 100 */
+#define SEG2_GPU_DVFS_VOLT1			(57000)		/* mV x 100 */
+#define SEG2_GPU_DVFS_VOLT2			(50200)		/* mV x 100 */
 
 #define SEG2_GPU_DVFS_VSRAM0			(107000)		/* mV x 100 */
-#define SEG2_GPU_DVFS_VSRAM1			(87500)		/* mV x 100 */
-#define SEG2_GPU_DVFS_VSRAM2			(87500)		/* mV x 100 */
+#define SEG2_GPU_DVFS_VSRAM1			(67500)		/* mV x 100 */
+#define SEG2_GPU_DVFS_VSRAM2			(67500)		/* mV x 100 */
 
 /**************************************************
  * MT6765 segment_3 : GPU DVFS OPP table Setting
  **************************************************/
 #define SEG3_GPU_DVFS_FREQ0			(700000)	/* KHz */
-#define SEG3_GPU_DVFS_FREQ1			(520000)	/* KHz */
-#define SEG3_GPU_DVFS_FREQ2			(416000)	/* KHz */
+#define SEG3_GPU_DVFS_FREQ1			(500000)	/* KHz */
+#define SEG3_GPU_DVFS_FREQ2			(400000)	/* KHz */
 
 #define SEG3_GPU_DVFS_VOLT0			(102000)		/* mV x 100 */
-#define SEG3_GPU_DVFS_VOLT1			(85000)		/* mV x 100 */
-#define SEG3_GPU_DVFS_VOLT2			(75000)		/* mV x 100 */
+#define SEG3_GPU_DVFS_VOLT1			(57000)		/* mV x 100 */
+#define SEG3_GPU_DVFS_VOLT2			(50200)		/* mV x 100 */
 
 #define SEG3_GPU_DVFS_VSRAM0			(107000)		/* mV x 100 */
-#define SEG3_GPU_DVFS_VSRAM1			(87500)		/* mV x 100 */
-#define SEG3_GPU_DVFS_VSRAM2			(87500)		/* mV x 100 */
+#define SEG3_GPU_DVFS_VSRAM1			(67500)		/* mV x 100 */
+#define SEG3_GPU_DVFS_VSRAM2			(67500)		/* mV x 100 */
 
 /**************************************************
  * MT6765T segment_4 : GPU DVFS OPP table Setting
