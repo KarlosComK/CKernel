@@ -22,7 +22,7 @@
 #define SEG2_GPU_DVFS_FREQ1			(500000)	/* KHz */
 #define SEG2_GPU_DVFS_FREQ2			(400000)	/* KHz */
 
-#define SEG2_GPU_DVFS_VOLT0			(90000)	/* mV x 100 */
+#define SEG2_GPU_DVFS_VOLT0			(90000)	    /* mV x 100 */
 #define SEG2_GPU_DVFS_VOLT1			(57000)		/* mV x 100 */
 #define SEG2_GPU_DVFS_VOLT2			(50200)		/* mV x 100 */
 
